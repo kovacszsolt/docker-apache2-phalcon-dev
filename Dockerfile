@@ -16,5 +16,13 @@ RUN apt-get install mysql-client -y
 RUN curl -sS https://getcomposer.org/installer -o composer-setup.php
 RUN php composer-setup.php --install-dir=/usr/local/bin --filename=composer
 RUN ln -s /etc/apache2/mods-available/rewrite.load /etc/apache2/mods-enabled/rewrite.load
-RUN export COMPOSER_ALLOW_SUPERUSER=1
+COPY .bashrc /root/.bashrc
+COPY apache.conf /etc/apache2/sites-available/apache.conf
+RUN curl -s https://packagecloud.io/install/repositories/phalcon/stable/script.deb.sh | bash
+RUN apt-get update
+RUN apt-get install php7.2-phalcon
+RUN git clone https://github.com/phalcon/phalcon-devtools.git /opt/phalcon-devtools
+RUN ln -s /opt/phalcon-devtools/phalcon /usr/bin/phalcon
+RUN chmod ugo+x /usr/bin/phalcon
+WORKDIR /var/www/
 CMD ["/usr/sbin/apache2ctl", "-D", "FOREGROUND"]
